@@ -1,38 +1,51 @@
 #!/usr/bin/env python3
-""" LRU Caching
+"""
+LRU Caching
 """
 
 
-from base_caching import BaseCaching, CacheMissError
-import collections.abc as abc
+from lib2to3.pgen2.token import BACKQUOTE
+from typing import OrderedDict
 
 
 BaseCaching = __import__('base_caching').BaseCaching
 
 
-class LRUCaching(BaseCaching):
-    """ LRU cache eviction system """
+class LRUCache(BaseCaching):
+    """
+    class LRUCache that inherits from BaseCaching and is a caching system
+    """
+
     def __init__(self):
-        """ Constructor """
+        """"
+        Init method
+        """
         super().__init__()
-        self.queue = []
+        self.lru_order = OrderedDict()
 
     def put(self, key, item):
-        """ Add an item in the cache """
+        """
+        Must assign to the dictionary self.cache_data
+        the item value for the key
+        """
         if key and item:
-            if key in self.cache_data:
-                self.queue.remove(key)
-            elif len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                discard = self.queue.pop(0)
-                del self.cache_data[discard]
-                print("DISCARD: {}".format(discard))
-            self.queue.append(key)
-        self.cache_data[key] = item
+            self.lru_order[key] = item
+            self.lru_order.move_to_end(key)
+            self.cache_data[key] = item
+
+        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
+            item_discarded = next(iter(self.lru_order))
+            del self.cache_data[item_discarded]
+            print("DISCARD:", item_discarded)
+
+        if len(self.lru_order) > BaseCaching.MAX_ITEMS:
+            self.lru_order.popitem(last=False)
 
     def get(self, key):
-        """ Get an item by key """
+        """
+        Must return the value in self.cache_data linked to key
+        """
         if key in self.cache_data:
-            self.queue.remove(key)
-            self.queue.append(key)
+            self.lru_order.move_to_end(key)
             return self.cache_data[key]
         return None
