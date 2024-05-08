@@ -1,32 +1,52 @@
 #!/usr/bin/env python3
-""" MRU Caching
 """
-BaseCaching = __import__('base_cache').BaseCaching
+MRU Caching
+"""
+
+
+from collections import OrderedDict
+
+
+BaseCaching = __import__('base_caching').BaseCaching
 
 
 class MRUCache(BaseCaching):
-    """ MRU cache eviction system """
+    """
+    class MRUCache that inherits
+    from BaseCaching and is a caching system
+    """
+
     def __init__(self):
-        """ Constructor """
         super().__init__()
-        self.queue = []
+        self.mru_order = OrderedDict()
 
     def put(self, key, item):
-        """ Add an item in the cache """
-        if key and item:
-            if key in self.cache_data:
-                self.queue.remove(key)
-            elif len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                discard = self.queue.pop()
-                del self.cache_data[discard]
-                print("DISCARD: {}".format(discard))
-            self.queue.append(key)
+        """
+        Must assign to the dictionary
+        self.cache_data the item value for the key key
+        """
+        if not key or not item:
+            return
+
         self.cache_data[key] = item
+        self.mru_order[key] = item
+
+        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
+            item_discarded = next(iter(self.mru_order))
+            del self.cache_data[item_discarded]
+            print("DISCARD:", item_discarded)
+
+        if len(self.mru_order) > BaseCaching.MAX_ITEMS:
+            self.mru_order.popitem(last=False)
+
+        self.mru_order.move_to_end(key, False)
 
     def get(self, key):
-        """ Get an item by key """
+        """
+        Must return the value in
+        self.cache_data linked to key.
+        """
         if key in self.cache_data:
-            self.queue.remove(key)
-            self.queue.append(key)
+            self.mru_order.move_to_end(key, False)
             return self.cache_data[key]
         return None
