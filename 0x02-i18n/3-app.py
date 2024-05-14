@@ -20,7 +20,12 @@ class Config:
     BABEL_DEFAULT_TIMEZONE = 'UTC'
 
 
+# configure the flask app
+app = Flask(__name__)
 app.config.from_object(Config)
+app.url_map.strict_slashes = False
+babel = Babel(app)
+
 
 
 @babel.localeselector
@@ -40,4 +45,4 @@ def index():
 
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=5000)
+  app.run(host='0.0.0.0', port=5000, debug=True)
