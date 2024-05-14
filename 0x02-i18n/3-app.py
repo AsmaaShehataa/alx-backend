@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-"""
-Parametrize templates
+"""A simple flask application
 """
 
-import babel
+
 from flask import Flask, render_template, request
 from flask_babel import Babel
 
-app = Flask(__name__)
-babel = Babel(app)
 
-
-class Config:
+class Config(object):
     """
     Config class
     """
@@ -23,26 +19,24 @@ class Config:
 # configure the flask app
 app = Flask(__name__)
 app.config.from_object(Config)
-app.url_map.strict_slashes = False
 babel = Babel(app)
-
 
 
 @babel.localeselector
 def get_locale():
     """
-     determine the best match with our supported languages.
+    get locale method
     """
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
-@app.route('/', methods=['GET'], strict_slashes=False)
+@app.route('/')
 def index():
     """
-    hello world
+    index
     """
-    return render_template('3-index.html')
+    return render_template('2-index.html')
 
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(port="5000", host="0.0.0.0", debug=True)
