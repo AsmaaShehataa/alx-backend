@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A simple flask application
+"""A simple flask app
 """
 
 
@@ -8,8 +8,10 @@ from flask_babel import Babel
 
 
 class Config(object):
-    """
-    Config class
+    """_summary_
+
+    Returns:
+            _type_: _description_
     """
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
@@ -19,14 +21,16 @@ class Config(object):
 # configure the flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+app.url_map.strict_slashes = False
 babel = Babel(app)
-
 
 
 @babel.localeselector
 def get_locale():
-    """
-    get locale method
+    """_summary_
+
+    Returns:
+            _type_: _description_
     """
     locale = request.args.get('locale')
     if locale in app.config['LANGUAGES']:
@@ -37,12 +41,12 @@ def get_locale():
 
 # babel.init_app(app, locale_selector=get_locale)
 
+
 @app.route('/')
 def index():
+    """_summary_
     """
-    index
-    """
-    return render_template('2-index.html')
+    return render_template('4-index.html')
 
 
 if __name__ == '__main__':
